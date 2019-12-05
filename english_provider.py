@@ -24,7 +24,7 @@ class EnglishProvider(GenericProvider):
         # easy / direct replacements
         s = '{0}{1}hundred{2}'.format(
             *re.match(r'(^|\W)({0})(\s{1})(?=$|\W)'.format(single_nums, ten_prefs),
-                      s, flags=re.INGORECASE)
+                      s, flags=re.IGNORECASE)
         )
         m = imatch(r'(^|\W)({0})(?=$|\W)'.format(dir_single_nums), s)
         m1, m2 = m.group(0), m.group(1)
@@ -133,3 +133,10 @@ class EnglishProvider(GenericProvider):
         s = re.sub(r'(?:^|\W)\/(\d+)', r'1/\1', s)
         s = re.sub(r'(?<=[a-zA-Z])\/(\d+)', r'1/\1', s)
         return s
+
+
+ep = EnglishProvider()
+
+
+def numerize(s):
+    return ep.numerize(s)
