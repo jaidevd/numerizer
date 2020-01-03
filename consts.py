@@ -87,7 +87,8 @@ ALL_ORDINALS.update(DIRECT_ORDINAL_FRACTIONALS)
 opf = SINGLE_ORDINAL_FRACTIONALS.copy()
 opf.update(DIRECT_ORDINAL_FRACTIONALS)
 opf.update(FRACTIONS)
-ONLY_PLURAL_FRACTIONS = {k + "s": v for k, v in opf.items()}
+ONLY_PLURAL_FRACTIONS = {k + "s": v for k, v in opf.items() if not k.endswith('s')}
+ONLY_PLURAL_FRACTIONS.update(opf)
 
 ALL_FRACTIONS = ONLY_PLURAL_FRACTIONS.copy()
 ALL_FRACTIONS.update(SINGLE_ORDINAL_FRACTIONALS)
