@@ -1,5 +1,6 @@
 import re
 import consts
+import sys
 
 
 HYPHENATED = re.compile(r' +|([^\d])-([^\d])')
@@ -79,10 +80,14 @@ def numerize_numerals(s, ignore=None, bias=None):
     if m is not None:
         def _repl_ten_prefs_single_ords(m):
             m2, m4 = m.group(2), m.group(4)
-            repl = r'\1<num>' + str(
-                consts.TEN_PREFIXES[m2] + consts.ORDINAL_SINGLE[m4] + m4[-2:])
+            repl = f'{m.group(1)}<num>' \
+                + str(consts.TEN_PREFIXES[m2] + consts.ORDINAL_SINGLE[m4]) \
+                + m4[-2:]
             return repl
-        s = re.sub(pat, _repl_ten_prefs_single_ords, s)
+        try:
+            s = re.sub(pat, _repl_ten_prefs_single_ords, s)
+        except TypeError:
+            from ipdb import set_trace; set_trace()  # NOQA
 
     #
     pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(ten_prefs), flags=re.IGNORECASE)
@@ -121,15 +126,21 @@ def numerize_fractions(s, ignore=None, bias=None):
         pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(fractionals), flags=re.IGNORECASE)
         m = re.search(pat, s)
     else:
-        pat = re.compile(r'(?!the|^)(\W)({})(?=$|\W)'.format(fractionals),
+        # Terrible hack below for variable negative lookbehind.
+        pat = re.compile(r'(?<!the)(\W)({})(?=$|\W)'.format(fractionals),
                          flags=re.IGNORECASE)
+        pat2 = re.compile(r'(?<!^)(\W)({})(?=$|\W)'.format(fractionals),
+                          flags=re.IGNORECASE)
         m = re.search(pat, s)
+        m2 = re.search(pat2, s)
+        if not(m and m2):
+            m = None
         if m is not None:
-            s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s)
+            s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s, count=1)
         pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(quarters), flags=re.IGNORECASE)
         m = re.search(pat, s)
         if m is not None:
-            s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s)
+            s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s, count=1)
     s = cleanup_fractions(s)
     return s
 
@@ -142,14 +153,23 @@ def numerize_ordinals(s, ignore=None, bias=None):
     all_ords = regexify(consts.ALL_ORDINALS.keys(), ignore=ignore)
     # {|x| x == 'second' && bias != :ordinal}
     if bias != 'ordinal' and 'second' not in ignore:
-        m = imatch(r'(?!second|\d|{})(^|\W)second(?=$|\W)'.format(consts.ALL_ORDINALS_REGEX),
-                   s)
+        pat = re.compile(r'(?!second|\d|{})(^|\W)second(?=$|\W)'.format(consts.ALL_ORDINALS_REGEX),
+                         flags=re.IGNORECASE)
+        m = re.search(pat, s)
         if m is not None:
-            s = f'{m.group(1)}<num>{str(consts.ALL_ORDINALS["second"])}nd'
-    else:
-        m = imatch(r'(^|\W)({})(?=$|\W)'.format(all_ords), s)
-        if m is not None:
-            s = f'{m.group(1)}<num>{str(consts.ALL_ORDINALS["second"])}' + m.group(2)[-2:]
+            def _repl_ordinal(m):
+                m1 = m.group(1)
+                m2 = str(consts.ALL_ORDINALS['second'])
+                return f'{m1}<num>{m2}nd'
+            s = re.sub(pat, _repl_ordinal, s, count=1)
+    pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(all_ords), flags=re.IGNORECASE)
+    m = re.search(pat, s)
+    if m is not None:
+        def _repl_ordinal(m):
+            m1 = m.group(1)
+            m2 = str(consts.ALL_ORDINALS[m.group(2)])
+            return f'{m1}<num>{m2}' + m.group(2)[-2:]
+        s = re.sub(pat, _repl_ordinal, s, count=1)
     return s
 
 
@@ -184,7 +204,7 @@ def numerize_halves(s, ignore=None):
     return isub(r'\bhalf\b', '1/2', s)
 
 
-def postprocess(s, ignore):
+def postprocess(s, ignore=None):
     s = andition(s)
     s = numerize_halves(s, ignore)
     s = re.sub(r'<num>', '', s)
@@ -224,7 +244,7 @@ def cleanup_fractions(s):
 
 
 def main():
-    print(numerize('three quarters'))
+    print(numerize(sys.argv[1]))  # NOQA
 
 
 if __name__ == "__main__":

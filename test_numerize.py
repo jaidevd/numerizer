@@ -66,149 +66,136 @@ def test_straight_parsing():
                 assert numerize(s) == str(k)
         else:
             assert numerize(v) == str(k)
+
+
+def test_combined_double_digits():
+    assert "21" == numerize("twentyone")
+    assert "37" == numerize("thirtyseven")
+
+
+def test_fractions_in_words():
+    assert "1/2" == numerize("one half")
+
+    assert "1/4" == numerize("1 quarter")
+    assert "1/4" == numerize("one quarter")
+    assert "1/4" == numerize("a quarter")
+    assert "1/8" == numerize("one eighth")
+
+    assert "3/4" == numerize("three quarters")
+    assert "2/4" == numerize("two fourths")
+    assert "3/8" == numerize("three eighths")
+    assert "7/10" == numerize("seven tenths")
+
+
+def test_fractional_addition():
+    assert "1.25" == numerize("one and a quarter")
+    assert "2.375" == numerize("two and three eighths")
+    assert "2.5" == numerize("two and a half")
+    assert "3.5 hours" == numerize("three and a half hours")
+
+
+def test_word_with_a_number():
+    assert "pennyweight" == numerize("pennyweight")
+
+
+def test_edges():
+    assert "27 Oct 2006 7:30am" == numerize("27 Oct 2006 7:30am")
+
+
+def test_multiple_slashes_should_not_be_evaluated():
+    assert '11/02/2007' == numerize('11/02/2007')
+
+
+def test_compatability():
+    assert '1/2' == numerize('1/2')
+    assert '05/06' == numerize('05/06')
+    assert "3.5 hours" == numerize("three and a half hours")
+    assert "1/2 an hour" == numerize("half an hour")
+
+
+def test_ordinal_strings():
+    ords = {
+        'first': '1st',
+        'second': '2nd',
+        'third': '3rd',
+        'fourth': '4th',
+        'fifth': '5th',
+        'seventh': '7th',
+        'eighth': '8th',
+        'tenth': '10th',
+        'eleventh': '11th',
+        'twelfth': '12th',
+        'thirteenth': '13th',
+        'sixteenth': '16th',
+        'twentieth': '20th',
+        'twenty-third': '23rd',
+        'thirtieth': '30th',
+        'thirty-first': '31st',
+        'fourtieth': '40th',
+        'fourty ninth': '49th',
+        'fiftieth': '50th',
+        'sixtieth': '60th',
+        'seventieth': '70th',
+        'eightieth': '80th',
+        'ninetieth': '90th',
+        'hundredth': '100th',
+        'thousandth': '1000th',
+        'millionth': '1000000th',
+        'billionth': '1000000000th',
+        'trillionth': '1000000000000th',
+        'first day month two': '1st day month 2'}
+    for k, v in ords.items():
+        assert v == numerize(k)
+
+
+def test_ambiguous_cases():
+    # Quarter ( Coin ) is Untested
+    # Second ( Time / Verb ) is Untested
+    assert 'the 4th' == numerize('the fourth')
+    assert '1/3 of' == numerize('a third of')
+    assert '4th' == numerize('fourth')
+    assert '2nd' == numerize('second')
+    # pronouns not supported yet
+    # some ambiguous cases here are untested
+    # assert 'I quarter' == numerize('I quarter')
+    # assert 'You quarter' == numerize('You quarter')
+    # assert 'I want to quarter' == numerize('I want to quarter')
+    # assert 'the 1st 1/4' == numerize('the first quarter')
+    assert '1/4 pound of beef' == numerize('quarter pound of beef')
+    # assert 'the 2nd second' == numerize('the second second')
+    # assert 'the 4th second' == numerize('the fourth second')
+    # assert '1 second' == numerize('one second')
+
+# TODO: Find way to distinguish this verb
+# assert 'I peel and quarter bananas', numerize('I peel and quarter bananas')
+
+# def test_ignore():
+#   assert 'the second day of march', numerize('the second day of march',
+#                                                              ignore: ['second'])
+#   assert 'quarter', numerize('quarter', ignore: ['quarter'])
+#   assert 'the five guys', numerize('the five guys', ignore: ['five'])
+#   assert 'the fifty 2', numerize('the fifty two', ignore: ['fifty'])
 #
-#     strings.sort.each do |key, value|
-#       Array(value).each do |value|
-#         assert_equal key, Numerizer.numerize(value).to_i
-#       end
-#     end
+# def test_bias_ordinal():
+#   assert '4th', numerize('fourth', bias: :ordinal)
+#   assert '12th', numerize('twelfth', bias: :ordinal)
+#   assert '2nd', numerize('second', bias: :ordinal)
+#   assert 'the 4th', numerize('the fourth', bias: :ordinal)
+#   assert '2.75', numerize('two and three fourths', bias: :ordinal)
+#   assert '3/5', numerize('three fifths', bias: :ordinal)
+#   assert 'a 4th of', numerize('a fourth of', bias: :ordinal)
+#   assert 'I quarter your home', numerize('I quarter your home', bias: :ordinal)
+#   assert 'the 1st 2nd 3rd',  numerize('the first second third', bias: :ordinal)
 #
-#     assert_equal "1/2", Numerizer.numerize("half")
-#     assert_equal "1/4", Numerizer.numerize("quarter")
-#   end
-#
-#   def test_combined_double_digets
-#     assert_equal "21", Numerizer.numerize("twentyone")
-#     assert_equal "37", Numerizer.numerize("thirtyseven")
-#   end
-#
-#   def test_fractions_in_words
-#     assert_equal "1/2", Numerizer.numerize("one half")
-#
-#     assert_equal "1/4", Numerizer.numerize("1 quarter")
-#     assert_equal "1/4", Numerizer.numerize("one quarter")
-#     assert_equal "1/4", Numerizer.numerize("a quarter")
-#     assert_equal "1/8", Numerizer.numerize("one eighth")
-#
-#     assert_equal "3/4", Numerizer.numerize("three quarters")
-#     assert_equal "2/4", Numerizer.numerize("two fourths")
-#     assert_equal "3/8", Numerizer.numerize("three eighths")
-#     assert_equal "7/10", Numerizer.numerize("seven tenths")
-#   end
-#
-#   def test_fractional_addition
-#     assert_equal "1.25", Numerizer.numerize("one and a quarter")
-#     assert_equal "2.375", Numerizer.numerize("two and three eighths")
-#     assert_equal "2.5", Numerizer.numerize("two and a half")
-#     assert_equal "3.5 hours", Numerizer.numerize("three and a half hours")
-#   end
-#
-#   def test_word_with_a_number
-#     assert_equal "pennyweight", Numerizer.numerize("pennyweight")
-#   end
-#
-#   def test_edges
-#     assert_equal "27 Oct 2006 7:30am", Numerizer.numerize("27 Oct 2006 7:30am")
-#   end
-#
-#   def test_multiple_slashes_should_not_be_evaluated
-#     assert_equal '11/02/2007', Numerizer.numerize('11/02/2007')
-#   end
-#
-#   def test_compatability
-#     assert_equal '1/2', Numerizer.numerize('1/2')
-#     assert_equal '05/06', Numerizer.numerize('05/06')
-#     assert_equal "3.5 hours", Numerizer.numerize("three and a half hours")
-#     assert_equal "1/2 an hour", Numerizer.numerize("half an hour")
-#   end
-#
-#   def test_ordinal_strings
-#     {
-#       'first' => '1st',
-#       'second' => '2nd',
-#       'third' => '3rd',
-#       'fourth' => '4th',
-#       'fifth' => '5th',
-#       'seventh' => '7th',
-#       'eighth' => '8th',
-#       'tenth' => '10th',
-#       'eleventh' => '11th',
-#       'twelfth' => '12th',
-#       'thirteenth' => '13th',
-#       'sixteenth' => '16th',
-#       'twentieth' => '20th',
-#       'twenty-third' => '23rd',
-#       'thirtieth' => '30th',
-#       'thirty-first' => '31st',
-#       'fourtieth' => '40th',
-#       'fourty ninth' => '49th',
-#       'fiftieth' => '50th',
-#       'sixtieth' => '60th',
-#       'seventieth' => '70th',
-#       'eightieth' => '80th',
-#       'ninetieth' => '90th',
-#       'hundredth' => '100th',
-#       'thousandth' => '1000th',
-#       'millionth' => '1000000th',
-#       'billionth' => '1000000000th',
-#       'trillionth' => '1000000000000th',
-#       'first day month two' => '1st day month 2'
-#     }.each do |key, val|
-#       assert_equal val, Numerizer.numerize(key)
-#     end
-#   end
-#
-#   def test_ambiguous_cases
-#     # Quarter ( Coin ) is Untested
-#     # Second ( Time / Verb ) is Untested
-#     assert_equal 'the 4th', Numerizer.numerize('the fourth')
-#     assert_equal '1/3 of', Numerizer.numerize('a third of')
-#     assert_equal '4th', Numerizer.numerize('fourth')
-#     assert_equal '2nd', Numerizer.numerize('second')
-#     assert_equal 'I quarter', Numerizer.numerize('I quarter')
-#     assert_equal 'You quarter', Numerizer.numerize('You quarter')
-#     assert_equal 'I want to quarter', Numerizer.numerize('I want to quarter')
-#     assert_equal 'the 1st 1/4', Numerizer.numerize('the first quarter')
-#     assert_equal '1/4 pound of beef', Numerizer.numerize('quarter pound of beef')
-#     assert_equal 'the 2nd second', Numerizer.numerize('the second second')
-#     assert_equal 'the 4th second', Numerizer.numerize('the fourth second')
-#     assert_equal '1 second', Numerizer.numerize('one second')
-#
-#   # TODO: Find way to distinguish this verb
-#   # assert_equal 'I peel and quarter bananas', Numerizer.numerize('I peel and quarter bananas')
-#   end
-#
-#   def test_ignore
-#     assert_equal 'the second day of march', Numerizer.numerize('the second day of march',
-#                                                                ignore: ['second'])
-#     assert_equal 'quarter', Numerizer.numerize('quarter', ignore: ['quarter'])
-#     assert_equal 'the five guys', Numerizer.numerize('the five guys', ignore: ['five'])
-#     assert_equal 'the fifty 2', Numerizer.numerize('the fifty two', ignore: ['fifty'])
-#   end
-#
-#   def test_bias_ordinal
-#     assert_equal '4th', Numerizer.numerize('fourth', bias: :ordinal)
-#     assert_equal '12th', Numerizer.numerize('twelfth', bias: :ordinal)
-#     assert_equal '2nd', Numerizer.numerize('second', bias: :ordinal)
-#     assert_equal 'the 4th', Numerizer.numerize('the fourth', bias: :ordinal)
-#     assert_equal '2.75', Numerizer.numerize('two and three fourths', bias: :ordinal)
-#     assert_equal '3/5', Numerizer.numerize('three fifths', bias: :ordinal)
-#     assert_equal 'a 4th of', Numerizer.numerize('a fourth of', bias: :ordinal)
-#     assert_equal 'I quarter your home', Numerizer.numerize('I quarter your home', bias: :ordinal)
-#     assert_equal 'the 1st 2nd 3rd',  Numerizer.numerize('the first second third', bias: :ordinal)
-#   end
-#
-#   def test_bias_fractional
-#     assert_equal '1/4', Numerizer.numerize('fourth', bias: :fractional)
-#     assert_equal '1/12', Numerizer.numerize('twelfth', bias: :fractional)
-#     assert_equal '2nd', Numerizer.numerize('second', bias: :fractional)
-#     assert_equal 'the 1/4', Numerizer.numerize('the fourth', bias: :fractional)
-#     assert_equal '2.75', Numerizer.numerize('two and three fourths', bias: :fractional)
-#     assert_equal '3/5', Numerizer.numerize('three fifths', bias: :fractional)
-#     assert_equal '1/4 of', Numerizer.numerize('a fourth of', bias: :fractional)
-#     assert_equal 'I 1/4 your home', Numerizer.numerize('I quarter your home',
-#                                                        bias: :fractional)
-#     assert_equal 'the 1st second 1/3',  Numerizer.numerize('the first second third',
-#                                                            bias: :fractional)
-#   end
-# end
+# def test_bias_fractional():
+#   assert '1/4', numerize('fourth', bias: :fractional)
+#   assert '1/12', numerize('twelfth', bias: :fractional)
+#   assert '2nd', numerize('second', bias: :fractional)
+#   assert 'the 1/4', numerize('the fourth', bias: :fractional)
+#   assert '2.75', numerize('two and three fourths', bias: :fractional)
+#   assert '3/5', numerize('three fifths', bias: :fractional)
+#   assert '1/4 of', numerize('a fourth of', bias: :fractional)
+#   assert 'I 1/4 your home', numerize('I quarter your home',
+#                                                      bias: :fractional)
+#   assert 'the 1st second 1/3',  numerize('the first second third',
+#                                                          bias: :fractional)
