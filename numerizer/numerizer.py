@@ -1,9 +1,6 @@
 import re
-import consts
+from . import consts
 import sys
-
-
-__version__ = "0.1.0"
 
 
 HYPHENATED = re.compile(r' +|([^\d])-([^\d])')

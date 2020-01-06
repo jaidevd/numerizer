@@ -51,5 +51,5 @@ Usage
     'platform 9.75'
 
 
-.. |Build Status| image:: https://travis-ci.com/jaidevd/numerizer.svg?branch=dev
+.. |Build Status| image:: https://travis-ci.com/jaidevd/numerizer.svg?branch=master
    :target: https://travis-ci.com/jaidevd/numerizer

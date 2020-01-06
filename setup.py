@@ -22,12 +22,12 @@ PROJECT_URLS = {
     'Documentation': 'https://github.com/jaidevd/numerizer/tree/master/README.rst',
     'Source Code': 'https://github.com/jaidevd/numerizer'
 }
+VERSION = '0.1.4'
 
 # Requirements
 install_requires = []
 
 # Setup
-import numerizer  # NOQA: E402
 setup(
     name=NAME,
     maintainer=MAINTAINER,
@@ -36,7 +36,7 @@ setup(
     license=LICENSE,
     url=URL,
     download_url=DOWNLOAD_URL,
-    version=numerizer.__version__,
+    version=VERSION,
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
     install_requires=install_requires
