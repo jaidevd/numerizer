@@ -1,4 +1,4 @@
-from numerize import numerize
+from numerizer import numerize
 
 
 def test_init():
