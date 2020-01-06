@@ -1,0 +1,24 @@
+# Config file for automatic testing at travis-ci.org
+
+# Run in Python 3 only. Drop Python 2 testing
+language: python
+python: '3.7'
+
+dist: xenial
+sudo: yes
+
+install:
+  # Install miniconda
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh
+  - bash $HOME/miniconda.sh -b -u -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  # Install pip modules
+  - pip install flake8 nose coverage
+  # Set up variables
+  - export BRANCH=$TRAVIS_BRANCH
+
+script:
+  - flake8
+  - nosetests -sv --with-coverage --cover-package=numerizer
