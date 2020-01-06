@@ -5,7 +5,6 @@ language: python
 python: '3.7'
 
 dist: xenial
-sudo: yes
 
 install:
   # Install miniconda
