@@ -3,10 +3,44 @@ import consts
 import sys
 
 
+__version__ = "0.1.0"
+
+
 HYPHENATED = re.compile(r' +|([^\d])-([^\d])')
-imatch = lambda x, y: re.search(x, y, flags=re.IGNORECASE)  # noqa: E731
 isub = lambda x, y, s: re.sub(x, y, s, flags=re.IGNORECASE)  # noqa: E731
 
+
+# Replacement regular expressions - to be used only in `re.sub`
+def _repl_single_digit(m):
+    m1 = m.group(1)
+    m2 = consts.DIRECT_SINGLE_NUMS[m.group(2)]
+    return f'{m1}<num>{m2}'
+
+
+def _repl_ten_prefixes(m):
+    m1 = m.group(1)
+    m2 = consts.TEN_PREFIXES[m.group(2)]
+    m3 = consts.SINGLE_NUMS[m.group(3)]
+    return f'{m1}<num>{m2 + m3}'
+
+
+def _repl_ten_prefs_single_ords(m):
+    m2, m4 = m.group(2), m.group(4)
+    repl = f'{m.group(1)}<num>' \
+        + str(consts.TEN_PREFIXES[m2] + consts.ORDINAL_SINGLE[m4]) \
+        + m4[-2:]
+    return repl
+
+
+def _repl_ten_prefs(m):
+    return f'{m.group(1)}<num>' + str(consts.TEN_PREFIXES[m.group(2)])
+
+
+def _repl_all_fractions(m):
+    return f'<num>{m.group(1)}' + str(consts.ALL_FRACTIONS[m.group(1)])
+
+
+# Public
 
 def preprocess(s):
     s = re.sub(HYPHENATED, r'\1 \2', s)
@@ -49,28 +83,22 @@ def numerize_numerals(s, ignore=None, bias=None):
     pat = re.compile(r'(^|\W)({0})(?=$|\W)'.format(dir_single_nums), flags=re.IGNORECASE)
     m = re.search(pat, s)
     if m is not None:
-        def _repl_single_digit(m):
-            m1 = m.group(1)
-            m2 = consts.DIRECT_SINGLE_NUMS[m.group(2)]
-            return f'{m1}<num>{m2}'
         s = re.sub(pat, _repl_single_digit, s)
 
     if bias == 'ordinal':
-        pat = r'(^|\W)\ba\b(?=$|\W)(?! (?:{0}))'.format(consts.ALL_ORDINALS_REGEX)
+        pat = re.compile(r'(^|\W)\ba\b(?=$|\W)(?! (?:{}))'.format(consts.ALL_ORDINALS_REGEX),
+                         flags=re.IGNORECASE)
     else:
-        pat = r'(^|\W)\ba\b(?=$|\W)'
-    s = isub(pat, r'\1<num>1', s)
+        pat = re.compile(r'(^|\W)\ba\b(?=$|\W)', flags=re.IGNORECASE)
+    m = re.search(pat, s)
+    if m is not None:
+        s = re.sub(pat, r'\1<num>1', s, count=1)
 
     # ten, twenty, etc
     pat = re.compile(r'(^|\W)({0})({1})(?=$|\W)'.format(ten_prefs, single_nums),
                      flags=re.IGNORECASE)
     m = re.search(pat, s)
     if m is not None:
-        def _repl_ten_prefixes(m):
-            m1 = m.group(1)
-            m2 = consts.TEN_PREFIXES[m.group(2)]
-            m3 = consts.SINGLE_NUMS[m.group(3)]
-            return f'{m1}<num>{m2 + m3}'
         s = re.sub(pat, _repl_ten_prefixes, s)
 
     #
@@ -78,12 +106,6 @@ def numerize_numerals(s, ignore=None, bias=None):
                      flags=re.IGNORECASE)
     m = re.search(pat, s)
     if m is not None:
-        def _repl_ten_prefs_single_ords(m):
-            m2, m4 = m.group(2), m.group(4)
-            repl = f'{m.group(1)}<num>' \
-                + str(consts.TEN_PREFIXES[m2] + consts.ORDINAL_SINGLE[m4]) \
-                + m4[-2:]
-            return repl
         try:
             s = re.sub(pat, _repl_ten_prefs_single_ords, s)
         except TypeError:
@@ -93,8 +115,6 @@ def numerize_numerals(s, ignore=None, bias=None):
     pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(ten_prefs), flags=re.IGNORECASE)
     m = re.search(pat, s)
     if m is not None:
-        def _repl_ten_prefs(m):
-            return f'{m.group(1)}<num>' + str(consts.TEN_PREFIXES[m.group(2)])
         s = re.sub(pat, _repl_ten_prefs, s)
 
     return s
@@ -117,8 +137,6 @@ def numerize_fractions(s, ignore=None, bias=None):
     pat = re.compile(r'a ({})(?=$|\W)'.format(fractionals), flags=re.IGNORECASE)
     m = re.search(pat, s)
     if m is not None:
-        def _repl_all_fractions(m):
-            return f'<num>{m.group(1)}' + str(consts.ALL_FRACTIONS[m.group(1)])
         s = re.sub(pat, _repl_all_fractions, s)
 
     #
@@ -139,8 +157,8 @@ def numerize_fractions(s, ignore=None, bias=None):
             s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s, count=1)
         pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(quarters), flags=re.IGNORECASE)
         m = re.search(pat, s)
-        if m is not None:
-            s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s, count=1)
+    if m is not None:
+        s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s, count=1)
     s = cleanup_fractions(s)
     return s
 

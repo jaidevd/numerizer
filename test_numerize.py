@@ -167,35 +167,38 @@ def test_ambiguous_cases():
     # assert '1 second' == numerize('one second')
 
 # TODO: Find way to distinguish this verb
-# assert 'I peel and quarter bananas', numerize('I peel and quarter bananas')
+# assert 'I peel and quarter bananas' == numerize('I peel and quarter bananas')
 
-# def test_ignore():
-#   assert 'the second day of march', numerize('the second day of march',
-#                                                              ignore: ['second'])
-#   assert 'quarter', numerize('quarter', ignore: ['quarter'])
-#   assert 'the five guys', numerize('the five guys', ignore: ['five'])
-#   assert 'the fifty 2', numerize('the fifty two', ignore: ['fifty'])
-#
-# def test_bias_ordinal():
-#   assert '4th', numerize('fourth', bias: :ordinal)
-#   assert '12th', numerize('twelfth', bias: :ordinal)
-#   assert '2nd', numerize('second', bias: :ordinal)
-#   assert 'the 4th', numerize('the fourth', bias: :ordinal)
-#   assert '2.75', numerize('two and three fourths', bias: :ordinal)
-#   assert '3/5', numerize('three fifths', bias: :ordinal)
-#   assert 'a 4th of', numerize('a fourth of', bias: :ordinal)
-#   assert 'I quarter your home', numerize('I quarter your home', bias: :ordinal)
-#   assert 'the 1st 2nd 3rd',  numerize('the first second third', bias: :ordinal)
-#
-# def test_bias_fractional():
-#   assert '1/4', numerize('fourth', bias: :fractional)
-#   assert '1/12', numerize('twelfth', bias: :fractional)
-#   assert '2nd', numerize('second', bias: :fractional)
-#   assert 'the 1/4', numerize('the fourth', bias: :fractional)
-#   assert '2.75', numerize('two and three fourths', bias: :fractional)
-#   assert '3/5', numerize('three fifths', bias: :fractional)
-#   assert '1/4 of', numerize('a fourth of', bias: :fractional)
-#   assert 'I 1/4 your home', numerize('I quarter your home',
-#                                                      bias: :fractional)
-#   assert 'the 1st second 1/3',  numerize('the first second third',
-#                                                          bias: :fractional)
+
+def test_ignore():
+    assert 'the second day of march' == numerize('the second day of march',
+                                                 ignore=['second'])
+    assert 'quarter' == numerize('quarter', ignore=['quarter'])
+    assert 'the five guys' == numerize('the five guys', ignore=['five'])
+    assert 'the fifty 2' == numerize('the fifty two', ignore=['fifty'])
+
+
+def test_bias_ordinal():
+    assert '4th' == numerize('fourth', bias='ordinal')
+    assert '12th' == numerize('twelfth', bias='ordinal')
+    assert '2nd' == numerize('second', bias='ordinal')
+    assert 'the 4th' == numerize('the fourth', bias='ordinal')
+    assert '2.75' == numerize('two and three fourths', bias='ordinal')
+    assert '3/5' == numerize('three fifths', bias='ordinal')
+    assert 'a 4th of' == numerize('a fourth of', bias='ordinal')
+    # assert 'I quarter your home' == numerize('I quarter your home', bias='ordinal')
+    # assert 'the 1st 2nd 3rd' == numerize('the first second third', bias='ordinal')
+
+
+def test_bias_fractional():
+    assert '1/4' == numerize('fourth', bias='fractional')
+    assert '1/12' == numerize('twelfth', bias='fractional')
+    assert '2nd' == numerize('second', bias='fractional')
+    # assert 'the 1/4' == numerize('the fourth', bias='fractional')
+    assert '2.75' == numerize('two and three fourths', bias='fractional')
+    assert '3/5' == numerize('three fifths', bias='fractional')
+    assert '1/4 of' == numerize('a fourth of', bias='fractional')
+    # assert 'I 1/4 your home' == numerize('I quarter your home',
+    #                                      bias='fractional')
+    # assert 'the 1st second 1/3' == numerize('the first second third',
+    #                                         bias='fractional')

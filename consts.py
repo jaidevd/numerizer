@@ -88,11 +88,12 @@ opf = SINGLE_ORDINAL_FRACTIONALS.copy()
 opf.update(DIRECT_ORDINAL_FRACTIONALS)
 opf.update(FRACTIONS)
 ONLY_PLURAL_FRACTIONS = {k + "s": v for k, v in opf.items() if not k.endswith('s')}
-ONLY_PLURAL_FRACTIONS.update(opf)
+ONLY_PLURAL_FRACTIONS.update({k: v for k, v in opf.items() if k.endswith('s')})
 
 ALL_FRACTIONS = ONLY_PLURAL_FRACTIONS.copy()
 ALL_FRACTIONS.update(SINGLE_ORDINAL_FRACTIONALS)
 ALL_FRACTIONS.update(DIRECT_ORDINAL_FRACTIONALS)
+ALL_FRACTIONS.update(opf)
 
 DIRECT_SINGLE_NUMS = DIRECT_NUMS.copy()
 DIRECT_SINGLE_NUMS.update(SINGLE_NUMS)
