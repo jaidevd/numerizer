@@ -4,7 +4,8 @@ numerizer
 =========
 
 A Python module to convert natural language numerics into ints and floats.
-This is a port of the Ruby gem [numerizer](https://github.com/jduff/numerizer.git)
+This is a port of the Ruby gem `numerizer
+<https://github.com/jduff/numerizer.git>`_
 
 Installation
 ------------
