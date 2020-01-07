@@ -5,6 +5,13 @@ def test_init():
     assert numerize('forty two') == '42'
 
 
+def test_case_insensitive():
+    assert numerize('Forty two') == '42'
+    assert numerize('FORTY TWO') == '42'
+    assert numerize('FORTY Second') == '42nd'
+    assert numerize('Ninety Nine') == '99'
+
+
 def test_hyenated():
     assert numerize('forty-two') == '42'
 
