@@ -10,31 +10,31 @@ isub = lambda x, y, s: re.sub(x, y, s, flags=re.IGNORECASE)  # noqa: E731
 # Replacement regular expressions - to be used only in `re.sub`
 def _repl_single_digit(m):
     m1 = m.group(1)
-    m2 = consts.DIRECT_SINGLE_NUMS[m.group(2)]
+    m2 = consts.DIRECT_SINGLE_NUMS[m.group(2).lower()]
     return f'{m1}<num>{m2}'
 
 
 def _repl_ten_prefixes(m):
     m1 = m.group(1)
-    m2 = consts.TEN_PREFIXES[m.group(2)]
-    m3 = consts.SINGLE_NUMS[m.group(3)]
+    m2 = consts.TEN_PREFIXES[m.group(2).lower()]
+    m3 = consts.SINGLE_NUMS[m.group(3).lower()]
     return f'{m1}<num>{m2 + m3}'
 
 
 def _repl_ten_prefs_single_ords(m):
     m2, m4 = m.group(2), m.group(4)
     repl = f'{m.group(1)}<num>' \
-        + str(consts.TEN_PREFIXES[m2] + consts.ORDINAL_SINGLE[m4]) \
+        + str(consts.TEN_PREFIXES[m2.lower()] + consts.ORDINAL_SINGLE[m4.lower()]) \
         + m4[-2:]
     return repl
 
 
 def _repl_ten_prefs(m):
-    return f'{m.group(1)}<num>' + str(consts.TEN_PREFIXES[m.group(2)])
+    return f'{m.group(1)}<num>' + str(consts.TEN_PREFIXES[m.group(2).lower()])
 
 
 def _repl_all_fractions(m):
-    return f'<num>{m.group(1)}' + str(consts.ALL_FRACTIONS[m.group(1)])
+    return f'<num>{m.group(1)}' + str(consts.ALL_FRACTIONS[m.group(1).lower()])
 
 
 # Public
@@ -151,11 +151,12 @@ def numerize_fractions(s, ignore=None, bias=None):
         if not(m and m2):
             m = None
         if m is not None:
-            s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s, count=1)
+            s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2).lower()]),
+                       s, count=1)
         pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(quarters), flags=re.IGNORECASE)
         m = re.search(pat, s)
     if m is not None:
-        s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2)]), s, count=1)
+        s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2).lower()]), s, count=1)
     s = cleanup_fractions(s)
     return s
 
@@ -174,7 +175,7 @@ def numerize_ordinals(s, ignore=None, bias=None):
         if m is not None:
             def _repl_ordinal(m):
                 m1 = m.group(1)
-                m2 = str(consts.ALL_ORDINALS['second'])
+                m2 = str(consts.ALL_ORDINALS['second'.lower()])
                 return f'{m1}<num>{m2}nd'
             s = re.sub(pat, _repl_ordinal, s, count=1)
     pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(all_ords), flags=re.IGNORECASE)
@@ -182,7 +183,7 @@ def numerize_ordinals(s, ignore=None, bias=None):
     if m is not None:
         def _repl_ordinal(m):
             m1 = m.group(1)
-            m2 = str(consts.ALL_ORDINALS[m.group(2)])
+            m2 = str(consts.ALL_ORDINALS[m.group(2).lower()])
             return f'{m1}<num>{m2}' + m.group(2)[-2:]
         s = re.sub(pat, _repl_ordinal, s, count=1)
     return s
