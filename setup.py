@@ -22,7 +22,7 @@ PROJECT_URLS = {
     'Documentation': 'https://github.com/jaidevd/numerizer/tree/master/README.rst',
     'Source Code': 'https://github.com/jaidevd/numerizer'
 }
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 
 # Requirements
 install_requires = []
