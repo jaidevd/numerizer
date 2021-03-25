@@ -207,7 +207,7 @@ def numerize_big_prefixes(s, ignore=None, bias=None):
                 except IndexError:
                     repl = str(v)
                 return repl
-            s = re.sub(pat, _repl_big_prefixes, s, count=1)
+            s = re.sub(pat, _repl_big_prefixes, s)
         s = andition(s)
     return s
 

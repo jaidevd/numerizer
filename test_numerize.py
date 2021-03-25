@@ -1,4 +1,5 @@
-from numerizer import numerize
+from numerizer import numerizer as num
+numerize = num.numerize
 
 
 def test_init():
@@ -12,7 +13,7 @@ def test_case_insensitive():
     assert numerize('Ninety Nine') == '99'
 
 
-def test_hyenated():
+def test_hyphenated():
     assert numerize('forty-two') == '42'
 
 
@@ -209,3 +210,15 @@ def test_bias_fractional():
     #                                      bias='fractional')
     # assert 'the 1st second 1/3' == numerize('the first second third',
     #                                         bias='fractional')
+
+
+def test_numerize_big_prefixes():
+    s = "two hundred and twenty five thousand seven hundred"
+    s = num.preprocess(s)
+    s = num.numerize_numerals(s)
+    assert num.numerize_big_prefixes(s) == '<num>225700'
+
+
+def test_misc():
+    assert numerize(
+        'two hundred twenty five thousand seven hundred and fifty-five') == '225755'
