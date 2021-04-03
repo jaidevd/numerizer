@@ -1,10 +1,16 @@
 import re
 from . import consts
-import sys
+try:
+    import spacy
+    nlp = spacy.load('en_core_web_sm')
+    SPACY_INSTALLED = True
+except ImportError:
+    SPACY_INSTALLED = False
 
 
 HYPHENATED = re.compile(r' +|([^\d])-([^\d])')
 isub = lambda x, y, s: re.sub(x, y, s, flags=re.IGNORECASE)  # noqa: E731
+SPACY_ENT_LABELS = ['DATE', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'CARDINAL', 'ORDINAL']
 
 
 # Replacement regular expressions - to be used only in `re.sub`
@@ -259,9 +265,77 @@ def cleanup_fractions(s):
     return s
 
 
-def main():
-    print(numerize(sys.argv[1]))  # NOQA
+def _span_numerize(span):
+    return numerize(span.text)
 
 
-if __name__ == "__main__":
-    main()
+def spacy_numerize(doc, labels='all', retokenize=False):
+    """Numerize a spacy document.
+
+    Parameters
+    ----------
+    doc : spacy.tokens.Doc
+        The SpaCy document to be numerized
+    labels : str / list, optional
+        The list of entity labels to be processed for numerization.
+        By default, all numeric tokens
+        (['DATE', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'CARDINAL', 'ORDINAL'])
+        are numerized. Any subset of this list can be specified to restrict
+        the types of entities to be numerized.
+    retokenize: bool, optional
+        If True, the original document is retokenized such that the span corresponding
+        to each numerized entity becomes a single token.
+
+    Examples
+    --------
+    >>> from spacy import load
+    >>> nlp = load('en_core_web_sm')
+    >>> spacy_numerize(nlp('The Hogwarts Express is at platform nine and three quarters.'))
+    {nine and three quarters: '9.75'}
+    >>> spacy_numerize(
+    ...    nlp('Their revenue has been a billion dollars, as of six months ago.'),
+    ...    labels=['MONEY']
+    ... )
+    {a billion dollars: '1000000000 dollars'}
+    >>> doc = nlp('The Hogwarts Express is at platform nine and three quarters.')
+    >>> spacy_numerize(doc, retokenize=True)
+    >>> [(c.text, c._.numerized) for c in doc]
+    [('The', 'The'),
+     ('Hogwarts', 'Hogwarts'),
+     ('Express', 'Express'),
+     ('is', 'is'),
+     ('at', 'at'),
+     ('platform', 'platform'),
+     ('nine and three quarters', '9.75'),
+     ('.', '.')]
+    """
+    if not SPACY_INSTALLED:
+        import warnings
+        warnings.warn('SpaCy is not installed. Please pip install spacy.')
+        return
+    if labels == 'all':
+        labels = SPACY_ENT_LABELS
+    elif not labels:
+        return numerize(doc.text)
+    numerized_spans = {span: span._.numerize() for span in doc.ents if span.label_ in labels}
+    if not retokenize:
+        return numerized_spans
+    with doc.retokenize() as retokenizer:
+        for span, numerized in numerized_spans.items():
+            retokenizer.merge(span, attrs={'_': {'numerized': numerized}})
+    return doc
+
+
+def _span_setter(token, numerized): return  # NOQA: E704
+
+
+def register_extension():
+    if SPACY_INSTALLED:
+        spacy.tokens.Token.set_extension(
+            'numerized', getter=_span_numerize,
+            setter=_span_setter)
+        spacy.tokens.Span.set_extension('numerize', method=_span_numerize)
+        spacy.tokens.Doc.set_extension('numerize', method=spacy_numerize)
+
+
+register_extension()

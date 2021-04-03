@@ -10,7 +10,7 @@ This is a port of the Ruby gem `numerizer
 Installation
 ------------
 
-The NLG library can be installed from PyPI as follows:
+The numerizer library can be installed from PyPI as follows:
 
 .. code:: bash
 
@@ -50,6 +50,41 @@ Usage
     '9.75'
     >>> numerize('platform nine and three quarters')
     'platform 9.75'
+
+
+Using the SpaCy extension
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Since version 0.2, numerizer is available as a `SpaCy extension <https://spacy.io/usage/processing-pipelines#custom-components-attributes>`_.
+
+Any named entities of a quantitative nature within a SpaCy document can be numerized as follows:
+
+.. code:: python
+
+    >>> from spacy import load
+    >>> nlp = load('en_core_web_sm')  # or load any other spaCy model
+    >>> doc = nlp('The projected revenue for the next quarter is over two million dollars.')
+    >>> doc._.numerize()
+    {the next quarter: 'the next 1/4', over two million dollars: 'over 2000000 dollars'}
+
+Users can specify which entity types are to be numerized, by using the `labels` argument in the extension function, as follows:
+
+.. code:: python
+
+    >>> doc._.numerize(labels=['MONEY'])  # only numerize entities of type 'MONEY'
+    {over two million dollars: 'over 2000000 dollars'}
+
+
+The extension is available for tokens and spans as well.
+
+.. code:: python
+
+    >>> two_million = doc[-4:-2]  # span corresponding to "two million"
+    >>> two_million._.numerize()
+    '2000000'
+    >>> quarter = doc[6]  # token corresponding to "quarter"
+    >>> quarter._.numerized
+    '1/4'
 
 
 Extras

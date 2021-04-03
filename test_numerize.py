@@ -1,5 +1,8 @@
 from numerizer import numerizer as num
+from spacy import load
+from spacy.tokens import Token
 numerize = num.numerize
+nlp = load('en_core_web_sm')
 
 
 def test_init():
@@ -222,3 +225,40 @@ def test_numerize_big_prefixes():
 def test_misc():
     assert numerize(
         'two hundred twenty five thousand seven hundred and fifty-five') == '225755'
+
+
+# Test the spacy extensions
+
+def test_spacy_default():
+    doc = nlp('The Hogwarts Express is at platform nine and three quarters.')
+    numerized = doc._.numerize()
+    assert isinstance(numerized, dict)
+    assert len(numerized) == 1
+    key, val = numerized.popitem()
+    assert key.text == 'nine and three quarters'
+    assert val == '9.75'
+
+
+def test_entity_filters():
+    doc = nlp("""
+        Their revenue has been a billion dollars, as of six months ago.
+        The next quarter is not so promising.""")
+    numerized = doc._.numerize(labels=['MONEY'])
+    assert len(numerized) == 1
+    key, val = numerized.popitem()
+    assert key.text == 'a billion dollars'
+    assert val == '1000000000 dollars'
+
+
+def test_retokenize():
+    doc = nlp('The Hogwarts Express is at platform nine and three quarters.')
+    doc._.numerize(retokenize=True)
+    assert isinstance(doc[-2], Token)
+    assert doc[-2].text == 'nine and three quarters'
+    assert doc[-2]._.numerized == '9.75'
+
+
+def test_span_token_extensions():
+    doc = nlp('The projected revenue for the next quarter is over two million dollars.')
+    assert doc[-4:-2]._.numerize() == '2000000'
+    assert doc[6]._.numerized == '1/4'
