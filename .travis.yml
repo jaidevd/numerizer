@@ -14,7 +14,8 @@ install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   # Install pip modules
-  - pip install flake8 nose coverage
+  - pip install flake8 nose coverage spacy
+  - python -m spacy download en_core_web_sm
   # Set up variables
   - export BRANCH=$TRAVIS_BRANCH
 

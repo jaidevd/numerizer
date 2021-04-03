@@ -1,1 +1,1 @@
-from .numerizer import numerize  # NOQA: F401
+from .numerizer import numerize, spacy_numerize  # NOQA: F401
