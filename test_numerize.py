@@ -259,6 +259,7 @@ def test_retokenize():
     assert doc[-2].text == 'nine and three quarters'
     assert doc[-2]._.numerized == '9.75'
 
+
 def test_span_token_extensions():
     doc = nlp('The projected revenue for the next quarter is over two million dollars.')
     assert doc[-4:-2]._.numerize() == '2000000'
