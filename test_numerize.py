@@ -67,6 +67,7 @@ def test_straight_parsing():
         100_000: '100 thousand',
         250_000: 'two hundred fifty thousand',
         1_000_000: 'one million',
+        1_200_000: '1.2 million',
         1_250_007: 'one million two hundred fifty thousand and seven',
         1_000_000_000: 'one billion',
         1_000_000_001: 'one billion and one'
@@ -258,7 +259,6 @@ def test_retokenize():
     assert doc[-2]._.numerized == '9.75'
 
 
-def test_span_token_extensions():
     doc = nlp('The projected revenue for the next quarter is over two million dollars.')
     assert doc[-4:-2]._.numerize() == '2000000'
     assert doc[6]._.numerized == '1/4'
