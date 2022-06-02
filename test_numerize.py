@@ -263,3 +263,20 @@ def test_span_token_extensions():
     doc = nlp('The projected revenue for the next quarter is over two million dollars.')
     assert doc[-4:-2]._.numerize() == '2000000'
     assert doc[6]._.numerized == '1/4'
+
+
+def test_spacy_models():
+    """Ensure that numerizer works with any spacy model."""
+    models = [
+        nlp,
+        load('en_core_web_md'),
+        load('en_core_web_lg'),
+    ]
+    for model in models:
+        doc = model('The Hogwarts Express is at platform nine and three quarters.')
+        numerized = doc._.numerize()
+        assert isinstance(numerized, dict)
+        assert len(numerized) == 1
+        key, val = numerized.popitem()
+        assert key.text == 'nine and three quarters'
+        assert val == '9.75'
