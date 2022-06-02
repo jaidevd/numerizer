@@ -2,7 +2,6 @@ import re
 from . import consts
 try:
     import spacy
-    nlp = spacy.load('en_core_web_sm')
     SPACY_INSTALLED = True
 except ImportError:
     SPACY_INSTALLED = False
