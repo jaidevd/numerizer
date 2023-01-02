@@ -123,6 +123,10 @@ def test_compatability():
     assert '05/06' == numerize('05/06')
     assert "3.5 hours" == numerize("three and a half hours")
     assert "1/2 an hour" == numerize("half an hour")
+    assert "(1/2)+2" == numerize("(1/2)+2")
+    assert "(10+10)/2" == numerize("(10+10)/2")
+    assert "(10+10)/2" == numerize("(10+10)/two")
+    assert "2*(45+21)/6" == numerize("2*(45+21)/6")
 
 
 def test_ordinal_strings():

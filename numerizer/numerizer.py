@@ -263,7 +263,7 @@ def cleanup_fractions(s):
         s = re.sub(pat, _repl_frac_cleanup, s)
 
     # fix unpreceded fractions
-    s = re.sub(r'(?:^|\W)\/(\d+)', r'1/\1', s)
+    s = re.sub(r'(?:(?<=^)|(?<=[^\w)]))\/(\d+)', r'1/\1', s)
     s = re.sub(r'(?<=[a-zA-Z])\/(\d+)', r'1/\1', s)
     return s
 
