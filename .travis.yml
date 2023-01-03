@@ -2,19 +2,19 @@
 
 # Run in Python 3 only. Drop Python 2 testing
 language: python
-python: '3.7'
+python:
+  - 3.7
+  - 3.8
+  - 3.9
 
 dist: xenial
 
+before_install:
+  - python --version
+
 install:
-  # Install miniconda
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh
-  - bash $HOME/miniconda.sh -b -u -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  # Install pip modules
-  - pip install flake8 nose coverage spacy
+  # Ru
+  - pip install -U pip pytest spacy coverage flake8
   - python -m spacy download en_core_web_sm
   - python -m spacy download en_core_web_md
   - python -m spacy download en_core_web_lg
@@ -23,4 +23,5 @@ install:
 
 script:
   - flake8
-  - nosetests -sv --with-coverage --cover-package=numerizer
+  - coverage run -m pytest
+  - coverage report -m
