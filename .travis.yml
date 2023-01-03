@@ -7,7 +7,7 @@ python:
   - 3.8
   - 3.9
 
-dist: xenial
+dist: jammy
 
 before_install:
   - python --version
