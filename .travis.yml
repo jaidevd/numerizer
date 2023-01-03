@@ -13,15 +13,14 @@ before_install:
   - python --version
 
 install:
-  # Ru
   - pip install -U pip pytest spacy coverage flake8
-  - python -m spacy download en_core_web_sm
-  - python -m spacy download en_core_web_md
-  - python -m spacy download en_core_web_lg
   # Set up variables
   - export BRANCH=$TRAVIS_BRANCH
 
 script:
   - flake8
+  - python -m spacy download en_core_web_sm
+  - python -m spacy download en_core_web_md
+  - python -m spacy download en_core_web_lg
   - coverage run -m pytest
   - coverage report -m
