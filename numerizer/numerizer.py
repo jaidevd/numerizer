@@ -153,7 +153,7 @@ def numerize_fractions(s, ignore=None, bias=None):
                           flags=re.IGNORECASE)
         m = re.search(pat, s)
         m2 = re.search(pat2, s)
-        if not(m and m2):
+        if not (m and m2):
             m = None
         if m is not None:
             s = re.sub(pat, lambda m: '/' + str(consts.ALL_FRACTIONS[m.group(2).lower()]),

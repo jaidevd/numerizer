@@ -92,5 +92,5 @@ Extras
 
 For R users, a wrapper library has been developed by `@amrrs <https://github.com/amrrs>`_. Try it out `here <https://github.com/amrrs/numerizer.git>`_.
 
-.. |Build Status| image:: https://travis-ci.com/jaidevd/numerizer.svg?branch=master
-   :target: https://travis-ci.com/jaidevd/numerizer
+.. |Build Status| image:: https://app.travis-ci.com/jaidevd/numerizer.svg?branch=master
+   :target: https://app.travis-ci.com/jaidevd/numerizer
