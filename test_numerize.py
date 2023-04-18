@@ -242,6 +242,20 @@ def test_misc():
     actual = numerize("two hundred twenty five thousand seven hundred and fifty-five")
     assert ideal == actual
 
+def test_andition():
+    tests = {
+        "thirty two and forty one": "32 and 41",
+        "thirty two and forty one thousand": "32 and 41000",
+        "one hundred and twenty three": "123",
+        "two thousand and thirty four": "2034",
+        "forty five and sixty seven": "45 and 67",
+        "one hundred and twenty three thousand and forty five": "123045",
+        "twenty five and seventy four and one": "25 and 74 and 1",
+        "twenty five and seventy four and one thousand": "25 and 74 and 1000",
+    }
+
+    for test in tests.items():
+        assert test[1] == numerize(test[0])
 
 # Test the spacy extensions
 condt = """Please install spacy models as follows:
