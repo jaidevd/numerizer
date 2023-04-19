@@ -237,11 +237,9 @@ def postprocess(s, ignore=None):
 
 
 def andition(s):
-    # Define a pattern for finding the numbers to be unified
-    pattern = re.compile(r'<num>(\d+)( | and )<num>(\d+)(?=[^\w]|$)', flags=re.IGNORECASE)
-
+    pat = re.compile(r'<num>(\d+)( | and )<num>(\d+)(?=[^\w]|$)', flags=re.IGNORECASE)
     while True:
-        matches = list(re.finditer(pattern, s))
+        matches = list(re.finditer(pat, s))
 
         # If there are no matches found, break out of the loop
         if len(matches) == 0:
