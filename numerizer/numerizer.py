@@ -239,15 +239,25 @@ def postprocess(s, ignore=None):
 def andition(s):
     pat = re.compile(r'<num>(\d+)( | and )<num>(\d+)(?=[^\w]|$)', flags=re.IGNORECASE)
     while True:
-        m = re.search(pat, s)
-        if m is not None:
-            if (m.group(2) == 'and') or (len(m.group(1)) > len(m.group(3))):
-                s = re.sub(pat, lambda m: '<num>' + str(int(m.group(1)) + int(m.group(3))),
-                           s, count=1)
-            else:
-                break
+        matches = list(re.finditer(pat, s))
 
-        else:
+        # If there are no matches found, break out of the loop
+        if len(matches) == 0:
+            break
+
+        substitutions = 0
+        # Iterate through matches in reverse order
+        for match in reversed(matches):
+            # Check if the numbers should be unified
+            if (match.group(2) == 'and') or (len(match.group(1)) > len(match.group(3))):
+                # Replace the matched part with the unified number
+                s = s[:match.start()] + '<num>'\
+                    + str(int(match.group(1)) +
+                          int(match.group(3))) + s[match.end():]
+                substitutions += 1
+
+        # If there were no substitutions, break out of the loop
+        if not substitutions:
             break
     return s
 
