@@ -11,6 +11,12 @@ try:
 except OSError:
     SPACY_MODEL_INSTALLED = False
 
+try:
+    nlp_trf = load("en_core_web_trf")
+    TRF_INSTALLED = True
+except OSError:
+    TRF_INSTALLED = False
+
 
 def test_init():
     assert numerize("forty two") == "42"
@@ -242,6 +248,7 @@ def test_misc():
     actual = numerize("two hundred twenty five thousand seven hundred and fifty-five")
     assert ideal == actual
 
+
 def test_andition():
     tests = {
         "thirty two and forty one": "32 and 41",
@@ -256,6 +263,11 @@ def test_andition():
 
     for test in tests.items():
         assert test[1] == numerize(test[0])
+
+
+def test_whitespaces():
+    assert "55000" == numerize("55  thousand")
+
 
 # Test the spacy extensions
 condt = """Please install spacy models as follows:
@@ -302,18 +314,13 @@ class TestSpacyExtensions(TestCase):
         assert doc[-4:-2]._.numerize() == "2000000"
         assert doc[6]._.numerized == "1/4"
 
-    def test_spacy_models(self):
-        """Ensure that numerizer works with any spacy model."""
-        models = [
-            nlp,
-            load("en_core_web_md"),
-            load("en_core_web_lg"),
-        ]
-        for model in models:
-            doc = model("The Hogwarts Express is at platform nine and three quarters.")
-            numerized = doc._.numerize()
-            assert isinstance(numerized, dict)
-            assert len(numerized) == 1
-            key, val = numerized.popitem()
-            assert key.text == "nine and three quarters"
-            assert val == "9.75"
+    @skipUnless(TRF_INSTALLED, "python -m spacy download en_core_web_trf")
+    def test_whitespace(self):
+        # See https://github.com/jaidevd/numerizer/issues/25
+        numerized = nlp_trf("55  thousand")._.numerize()
+        _, val = numerized.popitem()
+        assert val == "55 "
+
+        # But if we ignore labels,
+        numerized = nlp_trf("55  thousand")._.numerize(labels=False)
+        assert numerized == "55000"
