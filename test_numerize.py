@@ -43,6 +43,7 @@ def test_fraction():
     assert numerize("two and a half") == "2.5"
     assert numerize("three quarters") == "3/4"
     assert numerize("two and three eighths") == "2.375"
+    assert numerize("2B/2B") == "2B/2B"
 
 
 def test_straight_parsing():
@@ -313,6 +314,11 @@ class TestSpacyExtensions(TestCase):
         )
         assert doc[-4:-2]._.numerize() == "2000000"
         assert doc[6]._.numerized == "1/4"
+
+    def test_article(self):
+        # See: https://github.com/jaidevd/numerizer/issues/24
+        _, val = nlp("A cat, a baby and a hundred puppies.")._.numerize().popitem()
+        assert val == "100"
 
     @skipUnless(TRF_INSTALLED, "python -m spacy download en_core_web_trf")
     def test_whitespace(self):

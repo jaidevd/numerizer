@@ -42,8 +42,6 @@ def _repl_all_fractions(m):
     return f'<num>{m.group(1)}' + str(consts.ALL_FRACTIONS[m.group(1).lower()])
 
 
-# Public
-
 def preprocess(s):
     s = re.sub(HYPHENATED, r'\1 \2', s)
     s = re.sub(r'\ba$', '', s)
@@ -81,7 +79,6 @@ def numerize_numerals(s, ignore=None, bias=None):
     if m is not None:
         s = re.sub(pat, lambda m: f'{m.group(1)}{m.group(2)} hundred{m.group(3)}', s)
 
-    #
     pat = re.compile(r'(^|\W)({0})(?=$|\W)'.format(dir_single_nums), flags=re.IGNORECASE)
     m = re.search(pat, s)
     if m is not None:
@@ -135,13 +132,11 @@ def numerize_fractions(s, ignore=None, bias=None):
                                ignore=ignore + ['quarter', 'quarters'])
     quarters = regexify(['quarter', 'quarters'], ignore=ignore)
 
-    #
     pat = re.compile(r'a ({})(?=$|\W)'.format(fractionals), flags=re.IGNORECASE)
     m = re.search(pat, s)
     if m is not None:
         s = re.sub(pat, _repl_all_fractions, s)
 
-    #
     if bias == 'fractional':
         pat = re.compile(r'(^|\W)({})(?=$|\W)'.format(fractionals), flags=re.IGNORECASE)
         m = re.search(pat, s)
@@ -274,7 +269,8 @@ def cleanup_fractions(s):
 
     # fix unpreceded fractions
     s = re.sub(r'(?:(?<=^)|(?<=[^\w)]))\/(\d+)', r'1/\1', s)
-    s = re.sub(r'(?<=[a-zA-Z])\/(\d+)', r'1/\1', s)
+    # Following not needed yet, see: https://github.com/jaidevd/numerizer/issues/23
+    # s = re.sub(r'(?<=[a-zA-Z])\/(\d+)', r'1/\1', s)
     return s
 
 
