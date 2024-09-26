@@ -1,11 +1,11 @@
-|Build Status|
-
 numerizer
 =========
 
 A Python module to convert natural language numerics into ints and floats.
 This is a port of the Ruby gem `numerizer
 <https://github.com/jduff/numerizer.git>`_
+
+Numerizer has been tested on Python 3.9, 3.10 and 3.11.
 
 Installation
 ------------
@@ -15,14 +15,6 @@ The numerizer library can be installed from PyPI as follows:
 .. code:: bash
 
     $ pip install numerizer
-
-or from source as follows:
-
-.. code:: bash
-
-    $ git clone https://github.com/jaidevd/numerizer.git
-    $ cd numerizer
-    $ pip install -e .
 
 Usage
 -----
@@ -91,6 +83,3 @@ Extras
 ------
 
 For R users, a wrapper library has been developed by `@amrrs <https://github.com/amrrs>`_. Try it out `here <https://github.com/amrrs/numerizer.git>`_.
-
-.. |Build Status| image:: https://app.travis-ci.com/jaidevd/numerizer.svg?branch=master
-   :target: https://app.travis-ci.com/jaidevd/numerizer
