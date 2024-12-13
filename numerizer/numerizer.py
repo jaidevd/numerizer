@@ -204,8 +204,15 @@ def numerize_big_prefixes(s, ignore=None, bias=None):
                         try:
                             group_1_numberized = int(m.group(1))
                         except ValueError:
-                            group_1_numberized = float(m.group(1))
-                        repl = '<num>' + str(int(v * group_1_numberized))
+                            try:
+                                group_1_numberized = float(m.group(1))
+                            except ValueError:
+                                # Fallback in case group_1 is unparseable like ". million"
+                                group_1_numberized = None
+                        if group_1_numberized is not None:
+                            repl = "<num>" + str(int(v * group_1_numberized))
+                        else:
+                            repl = str(v)
                     else:
                         repl = str(v)
                 except IndexError:
