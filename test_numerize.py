@@ -196,6 +196,7 @@ def test_ambiguous_cases():
     # assert 'the 2nd second' == numerize('the second second')
     # assert 'the 4th second' == numerize('the fourth second')
     # assert '1 second' == numerize('one second')
+    assert "0-4/0" == numerize("0-4/0")
 
 
 # TODO: Find way to distinguish this verb

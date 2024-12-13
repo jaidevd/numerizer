@@ -262,7 +262,7 @@ def cleanup_fractions(s):
     pat = re.compile(r'(\d+)(?: | and |-)+(<num>|\s)*(\d+)\s*\/\s*(\d+)',
                      flags=re.IGNORECASE)
     m = re.search(pat, s)
-    if m is not None:
+    if m is not None and float(m.group(4)) != 0.0:
         def _repl_frac_cleanup(m):
             return str(float(m.group(1)) + (float(m.group(3)) / float(m.group(4))))
         s = re.sub(pat, _repl_frac_cleanup, s)
