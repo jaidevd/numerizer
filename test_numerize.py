@@ -128,6 +128,13 @@ def test_edges():
     assert "27 Oct 2006 7:30am" == numerize("27 Oct 2006 7:30am")
 
 
+def test_trailing_a_is_kept():
+    assert "vitamin a" == numerize("vitamin a")
+    assert "Plan A" == numerize("Plan A")
+    assert "a" == numerize("a")
+    assert "1 cat" == numerize("a cat")
+
+
 def test_multiple_slashes_should_not_be_evaluated():
     assert "11/02/2007" == numerize("11/02/2007")
 

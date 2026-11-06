@@ -44,7 +44,6 @@ def _repl_all_fractions(m):
 
 def preprocess(s):
     s = re.sub(HYPHENATED, r'\1 \2', s)
-    s = re.sub(r'\ba$', '', s)
     return s
 
 
@@ -84,11 +83,12 @@ def numerize_numerals(s, ignore=None, bias=None):
     if m is not None:
         s = re.sub(pat, _repl_single_digit, s)
 
+    # An "a" that ends the text quantifies nothing ("vitamin a"), so it is left as is.
     if bias == 'ordinal':
-        pat = re.compile(r'(^|\W)\ba\b(?=$|\W)(?! (?:{}))'.format(consts.ALL_ORDINALS_REGEX),
+        pat = re.compile(r'(^|\W)\ba\b(?=\W)(?! (?:{}))'.format(consts.ALL_ORDINALS_REGEX),
                          flags=re.IGNORECASE)
     else:
-        pat = re.compile(r'(^|\W)\ba\b(?=$|\W)', flags=re.IGNORECASE)
+        pat = re.compile(r'(^|\W)\ba\b(?=\W)', flags=re.IGNORECASE)
     m = re.search(pat, s)
     if m is not None:
         s = re.sub(pat, r'\1<num>1', s, count=1)
